@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ImagePicker</string>
+    <string name="all">전체보기</string>
 </resources>
