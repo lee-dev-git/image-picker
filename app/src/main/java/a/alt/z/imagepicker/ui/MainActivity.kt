@@ -22,23 +22,15 @@ class MainActivity : AppCompatActivity() {
     private val permissionLauncher = registerForActivityResult(RequestPermission()) { granted ->
         if(granted) {
             val images = getImagesGroupByAlbum(this)
-
-            val all = Album(0L, "전체보기")
-            binding.mainAlbumNameTextView.text = all.name
-            images[all]?.size
-                ?.let {
-                    @SuppressLint("SetTextI18n")
-                    binding.mainAlbumCountTextView.text = "${it}장"
-                }
-
-            albumAdapter = AlbumAdapter(images.toList(), ::onAlbumSelect)
-            binding.mainAlbumRecyclerView.adapter = albumAdapter
+            dataBinding(images)
         }
     }
 
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var albumAdapter: AlbumAdapter
+
+    private val imageAdapter = ImageAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,8 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         if (ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             val images = getImagesGroupByAlbum(this)
-            albumAdapter = AlbumAdapter(images.toList(), ::onAlbumSelect)
-            binding.mainAlbumRecyclerView.adapter = albumAdapter
+            dataBinding(images)
         }
         else
             permissionLauncher.launch(READ_EXTERNAL_STORAGE)
@@ -62,9 +53,25 @@ class MainActivity : AppCompatActivity() {
             mainAlbumCountTextView.setOnClickListener { showOrHideAlbumList() }
 
             mainSelectedImageRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+
+            mainImageRecyclerView.adapter = imageAdapter
             mainImageRecyclerView.layoutManager = GridLayoutManager(this@MainActivity, 3)
+
             mainAlbumRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
         }
+    }
+
+    private fun dataBinding(images: Map<Album, List<Uri>>) {
+        val all = Album(0L, "전체보기")
+        val uris = images[all]
+
+        binding.mainAlbumNameTextView.text = all.name
+        @SuppressLint("SetTextI18n")
+        binding.mainAlbumCountTextView.text = "${uris?.size ?: 0}장"
+        imageAdapter.submitList(uris)
+
+        albumAdapter = AlbumAdapter(images.toList(), ::onAlbumSelect)
+        binding.mainAlbumRecyclerView.adapter = albumAdapter
     }
 
     private fun onAlbumSelect(album: Album, uris: List<Uri>) {
