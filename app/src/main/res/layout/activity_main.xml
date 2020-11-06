@@ -12,7 +12,6 @@
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:background="@color/design_default_color_surface"
-        android:elevation="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -59,6 +58,7 @@
         android:id="@+id/main_image_recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#FAFAFA"
         android:overScrollMode="never"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -68,26 +68,25 @@
         tools:spanCount="3"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"/>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/main_album_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".7"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/main_album_recycler_view"
+    <FrameLayout
+        android:id="@+id/main_album_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/design_default_color_surface"
-        android:elevation="8dp"
-        android:overScrollMode="never"
+        android:background="@color/cardview_shadow_start_color"
         android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/main_toolbar"
-        app:layout_constraintBottom_toBottomOf="@id/main_album_guideline"
-        tools:listitem="@layout/item_album"
-        tools:itemCount="4"
-        tools:visibility="visible"/>
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/main_album_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="360dp"
+            android:background="@color/design_default_color_surface"
+            android:elevation="8dp"
+            android:overScrollMode="never"
+            tools:listitem="@layout/item_album"
+            tools:itemCount="4"/>
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

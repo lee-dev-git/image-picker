@@ -2,8 +2,8 @@ package a.alt.z.imagepicker.ui
 
 import a.alt.z.imagepicker.databinding.ItemAlbumBinding
 import a.alt.z.imagepicker.model.Album
+import a.alt.z.imagepicker.util.layoutInflater
 import android.net.Uri
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
@@ -11,8 +11,6 @@ class AlbumAdapter(
     private val images: List<Pair<Album, List<Uri>>>,
     private val onClickAction: (Album, List<Uri>) -> Unit
 ): RecyclerView.Adapter<AlbumViewHolder>() {
-
-    private val ViewGroup.layoutInflater get() = LayoutInflater.from(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlbumViewHolder
             = AlbumViewHolder(ItemAlbumBinding.inflate(parent.layoutInflater, parent, false), onClickAction)

@@ -11,10 +11,37 @@
         android:id="@+id/item_image_image_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_margin="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         tools:src="@tools:sample/avatars"/>
+
+    <View
+        android:id="@+id/item_image_mask"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#80000000"
+        app:layout_constraintStart_toStartOf="@id/item_image_image_view"
+        app:layout_constraintEnd_toEndOf="@id/item_image_image_view"
+        app:layout_constraintTop_toTopOf="@id/item_image_image_view"
+        app:layout_constraintBottom_toBottomOf="@id/item_image_image_view"
+        tools:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/item_image_index_text_view"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/background_image_index"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/item_image_mask"
+        app:layout_constraintTop_toTopOf="@id/item_image_mask"
+        tools:text="1"
+        tools:visibility="invisible"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

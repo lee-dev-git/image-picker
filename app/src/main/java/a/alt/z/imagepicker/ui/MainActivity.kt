@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,7 +31,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var albumAdapter: AlbumAdapter
 
-    private val imageAdapter = ImageAdapter()
+    private val imageAdapter = ImageAdapter(::onImageSelect)
+
+    private val selectedImageAdapter = SelectedImageAdapter(::onSelectedImageClick)
+
+    private var selectedImages: List<Uri> by Delegates.observable(emptyList()) { _, _, new ->
+        binding.mainSelectedImageRecyclerView.isVisible = new.isNotEmpty()
+        selectedImageAdapter.submitList(new)
+        imageAdapter.selectedImages = new
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,11 +61,13 @@ class MainActivity : AppCompatActivity() {
             mainAlbumNameTextView.setOnClickListener { showOrHideAlbumList() }
             mainAlbumCountTextView.setOnClickListener { showOrHideAlbumList() }
 
+            mainSelectedImageRecyclerView.adapter = selectedImageAdapter
             mainSelectedImageRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
 
             mainImageRecyclerView.adapter = imageAdapter
             mainImageRecyclerView.layoutManager = GridLayoutManager(this@MainActivity, 3)
 
+            mainAlbumLayout.setOnClickListener { mainAlbumLayout.isVisible = false }
             mainAlbumRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
         }
     }
@@ -79,10 +90,25 @@ class MainActivity : AppCompatActivity() {
             mainAlbumNameTextView.text = album.name
             @SuppressLint("SetTextI18n")
             mainAlbumCountTextView.text = "${uris.size}장"
+
+            imageAdapter.submitList(uris)
+
+            binding.mainAlbumLayout.isVisible = false
         }
     }
 
     private fun showOrHideAlbumList() {
-        binding.mainAlbumRecyclerView.isVisible = !binding.mainAlbumRecyclerView.isVisible
+        binding.mainAlbumLayout.isVisible = !binding.mainAlbumLayout.isVisible
+    }
+
+    private fun onImageSelect(uri: Uri) {
+        selectedImages = selectedImages.toMutableList().apply {
+            if(selectedImages.contains(uri)) remove(uri)
+            else add(uri)
+        }
+    }
+
+    private fun onSelectedImageClick(uri: Uri) {
+        selectedImages = selectedImages.toMutableList().apply { remove(uri) }
     }
 }
