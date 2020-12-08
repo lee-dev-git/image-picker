@@ -3,13 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/item_album_root_layout"
+    android:id="@+id/item_bucket_root_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
 
     <ImageView
-        android:id="@+id/item_album_image_view"
+        android:id="@+id/item_bucket_image_view"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginTop="16dp"
@@ -21,23 +21,23 @@
         tools:src="@tools:sample/avatars"/>
 
     <TextView
-        android:id="@+id/item_album_name_text_view"
+        android:id="@+id/item_bucket_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:textColor="@android:color/black"
-        app:layout_constraintStart_toEndOf="@id/item_album_image_view"
-        app:layout_constraintTop_toTopOf="@id/item_album_image_view"
-        app:layout_constraintBottom_toTopOf="@id/item_album_count_text_view"
+        app:layout_constraintStart_toEndOf="@id/item_bucket_image_view"
+        app:layout_constraintTop_toTopOf="@id/item_bucket_image_view"
+        app:layout_constraintBottom_toTopOf="@id/item_bucket_count_text_view"
         tools:text="Download"/>
 
     <TextView
-        android:id="@+id/item_album_count_text_view"
+        android:id="@+id/item_bucket_count_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        app:layout_constraintStart_toEndOf="@id/item_album_image_view"
-        app:layout_constraintTop_toBottomOf="@id/item_album_name_text_view"
-        app:layout_constraintBottom_toBottomOf="@id/item_album_image_view"
+        app:layout_constraintStart_toEndOf="@id/item_bucket_image_view"
+        app:layout_constraintTop_toBottomOf="@id/item_bucket_name_text_view"
+        app:layout_constraintBottom_toBottomOf="@id/item_bucket_image_view"
         tools:text="10장"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,57 +1,49 @@
 package a.alt.z.imagepicker.util
 
-import a.alt.z.imagepicker.model.Album
+import a.alt.z.imagepicker.model.Bucket
+import a.alt.z.imagepicker.model.Image
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 
-fun getImagesGroupByAlbum(context: Context): Map<Album, List<Uri>> {
-    val images = mutableMapOf<Album, List<Uri>>()
-    val total = Album(0L, "전체보기")
-    images[total] = emptyList()
+fun loadImages(context: Context): List<Image> {
 
-    val uris = mutableListOf<Uri>()
+    val images = mutableListOf<Image>()
 
-    val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+    val contentURI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
     val projections = arrayOf(
-        MediaStore.Images.ImageColumns._ID,
-        MediaStore.Images.ImageColumns.BUCKET_ID,
-        MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME
+        MediaStore.Images.Media._ID,
+        MediaStore.Images.Media.BUCKET_ID,
+        MediaStore.Images.Media.BUCKET_DISPLAY_NAME
     )
+
     val selection = MediaStore.Images.ImageColumns.SIZE + " > 0"
+
     val sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " DESC"
 
     context.contentResolver
-        .query(contentUri, projections, selection, null, sortOrder)
+        .query(contentURI, projections, selection, null, sortOrder)
         ?.use { cursor ->
             cursor.run {
                 if(moveToFirst()) {
-                    val idIndex = getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID)
-                    val bucketIdIndex = getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_ID)
-                    val bucketNameIndex = getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME)
+                    val idIndex = getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+                    val bucketIdIndex = getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_ID)
+                    val bucketNameIndex = getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
 
                     do {
-                        val uri = ContentUris.withAppendedId(contentUri, getLong(idIndex))
-                        uris.add(uri)
+                        val uri = ContentUris.withAppendedId(contentURI, getLong(idIndex))
+                        val bucketId = getLong(bucketIdIndex)
+                        val bucketName = getString(bucketNameIndex)
 
-                        val folderId = getLong(bucketIdIndex)
-                        val folderName = getString(bucketNameIndex)
-                        val album = Album(folderId, folderName)
+                        val image = Image(Bucket(bucketId, bucketName), uri)
 
-                        images[album]
-                            ?.let { uris ->
-                                images[album] = uris.toMutableList()
-                                    .apply { add(uri) }
-                            }
-                            ?: images.put(album, listOf(uri))
+                        images.add(image)
                     } while (moveToNext())
                 }
             }
         }
-
-    images[total] = uris
 
     return images
 }

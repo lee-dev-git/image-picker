@@ -1,27 +1,28 @@
-package a.alt.z.imagepicker.ui
+package a.alt.z.imagepicker.ui.imagepicker.adapter
 
 import a.alt.z.imagepicker.databinding.ItemImageBinding
-import android.net.Uri
+import a.alt.z.imagepicker.model.Image
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
 class ImageViewHolder(
     private val binding: ItemImageBinding,
-    private val onClickAction: (uri: Uri) -> Unit
+    private val onClickAction: (Image) -> Unit
 ): RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(uri: Uri, isSelected: Boolean, index: Int) {
+    fun bind(image: Image, hasFocus: Boolean, index: Int) {
         binding.apply {
-            itemImageRootLayout.setOnClickListener { onClickAction(uri) }
+            itemImageRootLayout.setOnClickListener { onClickAction(image) }
 
             Glide.with(itemImageImageView)
-                .load(uri)
+                .load(image.uri)
                 .centerCrop()
                 .into(itemImageImageView)
 
-            itemImageMask.isVisible = isSelected
-            itemImageIndexTextView.isVisible = isSelected
+            binding.itemImageMask.isVisible = hasFocus
+
+            itemImageIndexTextView.isVisible = index >= 0
             if(index >= 0) itemImageIndexTextView.text = (index + 1).toString()
         }
     }
