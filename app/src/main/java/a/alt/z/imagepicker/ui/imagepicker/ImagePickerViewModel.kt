@@ -4,6 +4,7 @@ import a.alt.z.imagepicker.model.BUCKET_ALL_IMAGES
 import a.alt.z.imagepicker.model.Bucket
 import a.alt.z.imagepicker.model.BucketMetadata
 import a.alt.z.imagepicker.model.Image
+import android.net.Uri
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,15 +18,23 @@ class ImagePickerViewModel @ViewModelInject constructor(): ViewModel() {
 
     fun onLoadFinished(images: List<Image>) = _images.postValue(images)
 
-    val bucketMetadata = _images.map { images ->
-        val all = BucketMetadata(BUCKET_ALL_IMAGES, images.first().uri, images.size)
-        listOf(all) + images
-            .groupBy { it.bucket }
-            .map {
+    val bucketMetadata: LiveData<List<BucketMetadata>> = _images.map { images ->
+        val all = BucketMetadata(
+            BUCKET_ALL_IMAGES,
+            images.firstOrNull()?.uri ?: Uri.EMPTY,
+            images.size
+        )
+
+        images
+            .takeIf { it.isNotEmpty() }
+            ?.groupBy { it.bucket }
+            ?.map {
                 val bucket = it.key
                 val bucketImages = it.value
                 BucketMetadata(bucket, bucketImages.first().uri, bucketImages.size)
             }
+            ?.let { listOf(all) + it }
+            ?: listOf(all)
     }
 
     private val _selectedBucket = MutableLiveData<Bucket>()
@@ -39,6 +48,7 @@ class ImagePickerViewModel @ViewModelInject constructor(): ViewModel() {
                 ?: emptyList()
         else
             _images.value
+                ?.takeIf { it.isNotEmpty() }
                 ?.filter { it.bucket == selectedBucket }
                 ?: emptyList()
     }
@@ -55,9 +65,9 @@ class ImagePickerViewModel @ViewModelInject constructor(): ViewModel() {
                 val size = selectedImages.size
 
                 if(size >= 10 && !contains)  {
-                    /* block */
+                    /* 10장 제한 */
                 } else {
-                    if(contains) { /* 선택 또는 삭제 */
+                    if(contains) { /* 포커싱 또는 삭제 */
                         if(hasFocus) { /* 삭제 */
                             selectedImages.toMutableList()
                                     .apply { remove(image) }
@@ -65,7 +75,7 @@ class ImagePickerViewModel @ViewModelInject constructor(): ViewModel() {
                                         _selectedImages.value = it
                                         _focusedImage.value = it.lastOrNull()
                                     }
-                        } else { /* 선택 */
+                        } else { /* 포커싱 */
                             _focusedImage.value = image
                         }
                     } else {
@@ -80,12 +90,11 @@ class ImagePickerViewModel @ViewModelInject constructor(): ViewModel() {
                     }
                 }
             }
-            ?: _selectedImages
-                    .postValue(listOf(image))
-                    .also { _focusedImage.postValue(image) }
+            ?: Unit.apply {
+                _selectedImages.value = listOf(image)
+                _focusedImage.value = image
+            }
     }
-
-    private val _focusedImageIndex = MutableLiveData<Int>()
 
     private val _focusedImage = MutableLiveData<Image?>()
     val focusedImage: LiveData<Image?> = _focusedImage

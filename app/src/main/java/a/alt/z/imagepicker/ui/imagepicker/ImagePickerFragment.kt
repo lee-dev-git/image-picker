@@ -12,7 +12,6 @@ import a.alt.z.imagepicker.util.loadImages
 import a.alt.z.imagepicker.util.viewBinding
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -91,7 +90,9 @@ class ImagePickerFragment: Fragment(R.layout.fragment_image_picker) {
         viewModel.images.observe(viewLifecycleOwner) { images ->
             imageAdapter.submitList(images)
             imageAdapter.focusedImage = images.firstOrNull()
-            selectedImageAdapter.submitList(listOf(images.firstOrNull()))
+
+            images.firstOrNull()
+                ?.let { selectedImageAdapter.submitList(listOf(it)) }
         }
 
         viewModel.bucketMetadata.observe(viewLifecycleOwner) { bucketMetadata -> bucketAdapter.submitList(bucketMetadata) }
@@ -112,7 +113,10 @@ class ImagePickerFragment: Fragment(R.layout.fragment_image_picker) {
             viewModel.selectedImages.value
                     ?.indexOf(focusedImage)
                     ?.takeIf { it >= 0 }
-                    ?.let { binding.imagePickerSelectedImagesViewPager.setCurrentItem(it, false) }
+                    ?.let {
+                        Timber.debug { "size: ${selectedImageAdapter.currentList.size}, position: $it" }
+                        binding.imagePickerSelectedImagesViewPager.setCurrentItem(it, false)
+                    }
         }
     }
 }

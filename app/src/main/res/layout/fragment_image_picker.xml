@@ -18,15 +18,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/image_picker_selected_images_view_pager"
+    <View
+        android:id="@+id/image_picker_focused_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginEnd="28dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_picker_ratio"
         app:layout_constraintDimensionRatio="1:1"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/image_picker_selected_images_view_pager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/image_picker_focused_image"
+        app:layout_constraintBottom_toBottomOf="@id/image_picker_focused_image"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/image_picker_contents_layout"

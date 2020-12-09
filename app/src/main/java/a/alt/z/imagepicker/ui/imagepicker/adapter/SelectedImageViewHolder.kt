@@ -12,6 +12,8 @@ class SelectedImageViewHolder(
         binding.apply {
             itemSelectedImageRootLayout.setOnClickListener { /*onClickAction(image)*/ }
             itemSelectedImageCropView.setUri(image.uri)
+            itemSelectedImageCropView.crop()
+
         }
     }
 }
