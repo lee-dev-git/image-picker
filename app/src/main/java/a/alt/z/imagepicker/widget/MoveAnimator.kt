@@ -31,7 +31,7 @@ internal interface MoveAnimator {
         /**
          * dumping ratio when flinging or bouncing
          */
-        const val DAMPING_RATIO = SpringForce.DAMPING_RATIO_NO_BOUNCY
+        const val DAMPING_RATIO = SpringForce.DAMPING_RATIO_LOW_BOUNCY
 
         /**
          * friction when flinging

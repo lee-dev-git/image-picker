@@ -11,7 +11,38 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 
+/**
+ * focused
+ * selected
+ *
+ * 1. 사용자가 이미지를 선택
+ *
+ * 2.1 이미지 추가
+ * 2.2 이미지 삭제
+ * 2.3 다른 이미지 수정
+ *
+ * 3.1 selected images + new image
+ *     focused image = new image
+ *     기존 focused image 가 있다면 데이터 저장
+ *
+ * 3.2 selected images - image
+ *     focused image = selected images 의 마지막 image
+ *     focused image data - image data
+ *
+ * 3.3 focused image = selected image
+ *     기존 focused image 데이터 저장
+ */
 class ImagePickerViewModel @ViewModelInject constructor(): ViewModel() {
+
+    private val _ratio = MutableLiveData(Ratio.RATIO_1_1)
+    val ratio: LiveData<Ratio> = _ratio
+
+    fun changeRatio() {
+        when(_ratio.value) {
+            Ratio.RATIO_1_1 -> _ratio.postValue(Ratio.RATIO_4_3)
+            Ratio.RATIO_4_3 -> _ratio.postValue(Ratio.RATIO_1_1)
+        }
+    }
 
     private val _images = MutableLiveData<List<Image>>()
     val images: LiveData<List<Image>> = _images
@@ -64,29 +95,27 @@ class ImagePickerViewModel @ViewModelInject constructor(): ViewModel() {
                 val hasFocus = focusedImage.value == image
                 val size = selectedImages.size
 
-                if(size >= 10 && !contains)  {
-                    /* 10장 제한 */
-                } else {
-                    if(contains) { /* 포커싱 또는 삭제 */
-                        if(hasFocus) { /* 삭제 */
-                            selectedImages.toMutableList()
-                                    .apply { remove(image) }
-                                    .let {
-                                        _selectedImages.value = it
-                                        _focusedImage.value = it.lastOrNull()
-                                    }
-                        } else { /* 포커싱 */
-                            _focusedImage.value = image
-                        }
+                if(!contains) {
+                    if(size >= 10) {
+
                     } else {
-                        /* 추가 */
                         selectedImages.toMutableList()
                                 .apply { add(image) }
                                 .let {
                                     _selectedImages.value = it
                                     _focusedImage.value = image
                                 }
-
+                    }
+                } else {
+                    if(hasFocus) {
+                        selectedImages.toMutableList()
+                                .apply { remove(image) }
+                                .let {
+                                    _selectedImages.value = it
+                                    _focusedImage.value = it.lastOrNull()
+                                }
+                    } else {
+                        _focusedImage.value = image
                     }
                 }
             }
@@ -98,4 +127,8 @@ class ImagePickerViewModel @ViewModelInject constructor(): ViewModel() {
 
     private val _focusedImage = MutableLiveData<Image?>()
     val focusedImage: LiveData<Image?> = _focusedImage
+}
+
+enum class Ratio {
+    RATIO_1_1, RATIO_4_3
 }

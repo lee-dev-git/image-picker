@@ -9,35 +9,58 @@
 
     <TextView
         android:id="@+id/image_picker_ratio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="32dp"
+        android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:text="4:3"
+        android:background="@drawable/background_ratio"
+        android:gravity="center"
+        android:text="1:1"
         android:textColor="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintDimensionRatio="1:1"/>
 
-    <View
-        android:id="@+id/image_picker_focused_image"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/crop_layout_top_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:layout_constraintGuide_percent=".1"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/crop_layout_bottom_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:layout_constraintGuide_percent=".55"/>
+
+    <a.alt.z.imagepicker.widget.CropLayout
+        android:id="@+id/image_picker_crop_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="28dp"
         android:layout_marginEnd="28dp"
-        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_picker_ratio"
-        app:layout_constraintDimensionRatio="1:1"/>
+        app:layout_constraintTop_toTopOf="@id/crop_layout_top_guideline"
+        app:layout_constraintBottom_toBottomOf="@id/crop_layout_bottom_guideline"/>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/image_picker_selected_images_view_pager"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/image_picker_focused_image"
-        app:layout_constraintBottom_toBottomOf="@id/image_picker_focused_image"/>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/image_picker_top_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="1"
+        tools:layout_constraintGuide_percent=".6"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/image_picker_bottom_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="2"
+        tools:layout_constraintGuide_percent="1.6"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/image_picker_contents_layout"
@@ -45,8 +68,8 @@
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_picker_selected_images_view_pager"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/image_picker_top_guideline"
+        app:layout_constraintBottom_toTopOf="@id/image_picker_bottom_guideline">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/image_picker_toolbar"
@@ -105,6 +128,15 @@
             tools:layoutManager="GridLayoutManager"
             tools:spanCount="4"/>
 
+        <View
+            android:id="@+id/image_picker_track_pad"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="@id/image_picker_recycler_view"
+            app:layout_constraintEnd_toEndOf="@id/image_picker_recycler_view"
+            app:layout_constraintTop_toTopOf="@id/image_picker_recycler_view"
+            app:layout_constraintBottom_toBottomOf="@id/image_picker_recycler_view"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/image_picker_bucket_recycler_view"
             android:layout_width="0dp"
@@ -117,4 +149,22 @@
             app:layout_constraintTop_toBottomOf="@id/image_picker_toolbar"
             app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/image_picker_crop_result_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/cardview_shadow_start_color"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/image_picker_crop_result_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"/>
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

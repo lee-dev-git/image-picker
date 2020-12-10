@@ -14,6 +14,7 @@ class CropOverlay @JvmOverloads constructor(
     private val backgroundPaint = Paint().apply {
         /* TODO */
         color = ContextCompat.getColor(context, android.R.color.black)
+        alpha = (255 * 0.8F).toInt()
     }
 
     private val cropPaint = Paint().apply {
@@ -29,8 +30,10 @@ class CropOverlay @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        /*
         drawBackground(canvas)
         drawCrop(canvas)
+        */
         /* border? */
     }
 
@@ -45,8 +48,8 @@ class CropOverlay @JvmOverloads constructor(
 
         val left = (width - frameWidth) / 2F
         val top = (height - frameHeight) / 2F
-        val right = (width - frameWidth) / 2F
-        val bottom = (height - frameHeight) / 2F
+        val right = left + frameWidth
+        val bottom = top + frameHeight
 
         canvas.drawRect(left, top, right, bottom, cropPaint)
     }

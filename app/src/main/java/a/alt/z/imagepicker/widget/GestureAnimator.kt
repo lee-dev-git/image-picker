@@ -33,30 +33,25 @@ internal class GestureAnimator(
     }
 
     companion object {
-        /*
-        fun of(target: View, frame: RectF, scale: Float): GestureAnimator {
-            val horizontalAnimator = HorizontalAnimator(
+        fun of(target: View, frame: RectF, maxScale: Float): GestureAnimator {
+            val horizontalAnimator = HorizontalMoveAnimator(
                 targetView = target,
                 leftBound = frame.left,
                 rightBound = frame.right,
-                maxScale = scale
+                maxScale = maxScale
             )
-            val verticalAnimator = VerticalAnimatorImpl(
+            val verticalAnimator = VerticalMoveAnimator(
                 targetView = target,
                 topBound = frame.top,
                 bottomBound = frame.bottom,
-                maxScale = scale
+                maxScale = maxScale
             )
-            val scaleAnimator = ScaleAnimatorImpl(
+            val scaleAnimator = ScaleGestureAnimator(
                 targetView = target,
-                maxScale = scale
+                maxScale = maxScale
             )
-            return com.takusemba.cropme.internal.GestureAnimator(
-                horizontalAnimator,
-                verticalAnimator,
-                scaleAnimator
-            )
+
+            return GestureAnimator(horizontalAnimator, verticalAnimator, scaleAnimator)
         }
-        */
     }
 }
