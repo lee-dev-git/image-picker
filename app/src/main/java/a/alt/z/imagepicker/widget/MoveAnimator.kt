@@ -2,7 +2,11 @@ package a.alt.z.imagepicker.widget
 
 import androidx.dynamicanimation.animation.SpringForce
 
-internal interface MoveAnimator {
+interface MoveAnimator {
+
+    var startBound: Float
+
+    var endBound: Float
 
     /**
      * Move image

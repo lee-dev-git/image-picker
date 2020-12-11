@@ -3,7 +3,7 @@ package a.alt.z.imagepicker.widget
 /**
  * ActionListener to notify action events that is needed for moving/scaling a view.
  */
-internal interface ActionListener {
+interface ActionListener {
 
     /**
      * Called when scaling action is detected

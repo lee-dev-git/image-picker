@@ -7,13 +7,15 @@ import androidx.dynamicanimation.animation.*
 
 class HorizontalMoveAnimator constructor(
     private val targetView: View,
-    private val leftBound: Float,
-    private val rightBound: Float,
     private val maxScale: Float,
     private val spring: SpringAnimation,
     private val fling: FlingAnimation,
     private val animator: ObjectAnimator
 ) : MoveAnimator {
+
+    override var startBound: Float = 0F
+
+    override var endBound: Float = 0F
 
     constructor(
         targetView: View,
@@ -22,13 +24,14 @@ class HorizontalMoveAnimator constructor(
         maxScale: Float
     ) : this(
         targetView = targetView,
-        leftBound = leftBound,
-        rightBound = rightBound,
         maxScale = maxScale,
         spring = SpringAnimation(targetView, VERTICAL_PROPERTY).setSpring(SPRING_FORCE),
         fling = FlingAnimation(targetView, DynamicAnimation.X).setFriction(MoveAnimator.FRICTION),
         animator = ANIMATOR
-    )
+    ) {
+        startBound = leftBound
+        endBound = rightBound
+    }
 
     private val updateListener = DynamicAnimation.OnAnimationUpdateListener { _, _, velocity ->
         val expectedRect = expectRect()
@@ -89,7 +92,7 @@ class HorizontalMoveAnimator constructor(
     }
 
     private fun outOfBounds(rect: Rect): Boolean {
-        return leftBound < rect.left || rect.right < rightBound
+        return startBound < rect.left || rect.right < endBound
     }
 
     private fun adjustToBounds(rect: Rect, velocity: Float = 0f) {
@@ -100,13 +103,13 @@ class HorizontalMoveAnimator constructor(
         }
         val diff = (targetView.width * scale - targetView.width) / 2
 
-        if (leftBound < rect.left) {
+        if (startBound < rect.left) {
             cancel()
-            val finalPosition = leftBound + diff
+            val finalPosition = startBound + diff
             spring.setStartVelocity(velocity).animateToFinalPosition(finalPosition)
-        } else if (rect.right < rightBound) {
+        } else if (rect.right < endBound) {
             cancel()
-            val finalPosition = rightBound - targetView.width.toFloat() - diff
+            val finalPosition = endBound - targetView.width.toFloat() - diff
             spring.setStartVelocity(velocity).animateToFinalPosition(finalPosition)
         }
     }

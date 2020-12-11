@@ -9,35 +9,25 @@ import a.alt.z.imagepicker.ui.imagepicker.adapter.BucketAdapter
 import a.alt.z.imagepicker.ui.imagepicker.adapter.ImageAdapter
 import a.alt.z.imagepicker.ui.imagepicker.adapter.CropResultAdapter
 import a.alt.z.imagepicker.util.*
-import a.alt.z.imagepicker.widget.CropParam
+import a.alt.z.imagepicker.widget.CropRect
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.ScaleAnimation
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 /**
  * uri
@@ -57,30 +47,34 @@ class ImagePickerFragment: Fragment(R.layout.fragment_image_picker) {
 
     private val cropResultAdapter = CropResultAdapter()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
         lifecycleScope.launch {
             val images = withContext(Dispatchers.IO) { loadImages(requireContext()) }
+
             viewModel.onLoadFinished(images)
             viewModel.onBucketSelect(BUCKET_ALL_IMAGES)
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         init()
+
         setupObserver()
     }
 
     private fun init() {
-        binding.imagePickerRatio.pivotY = binding.imagePickerRatio.measuredHeight / 2F
-        binding.imagePickerRatio.setOnClickListener { viewModel.changeRatio() }
+        binding.imagePickerSquareRatio.setOnClickListener { viewModel.changeRatio() }
+        binding.imagePickerClassicRatio.setOnClickListener { viewModel.changeRatio() }
 
         binding.imagePickerBack.setOnClickListener {  }
         binding.imagePickerBucketName.setOnClickListener { showOrHideBucketList() }
         binding.imagePickerUpload.setOnClickListener {
             try {
                 val focusedImage = requireNotNull(viewModel.focusedImage.value)
-
-                val param = binding.imagePickerCropLayout.getCropParam()
-                param?.let { cropParams[focusedImage] = it }
 
                 cropParams.entries.forEach {
                     val image = it.key
@@ -165,9 +159,11 @@ class ImagePickerFragment: Fragment(R.layout.fragment_image_picker) {
                 ?.let { focusedImage ->
                     if(focusedImage == image) cropParams.remove(image)
                     else {
+                        /*
                         binding.imagePickerCropLayout
                                 .getCropParam()
                                 ?.let { cropParams.put(focusedImage, it) }
+                                */
                     }
                 }
         viewModel.onImageSelect(image)
@@ -177,7 +173,7 @@ class ImagePickerFragment: Fragment(R.layout.fragment_image_picker) {
 
     private fun showOrHideBucketList() { binding.imagePickerBucketRecyclerView.apply { isVisible = !isVisible } }
 
-    private var cropParams = mutableMapOf<Image, CropParam>()
+    private var cropParams = mutableMapOf<Image, CropRect>()
 
     private val cropResult = mutableListOf<Bitmap>()
 
@@ -185,31 +181,30 @@ class ImagePickerFragment: Fragment(R.layout.fragment_image_picker) {
         viewModel.ratio.observe(viewLifecycleOwner) { ratio ->
             when(ratio) {
                 Ratio.RATIO_1_1 -> {
+                 //   binding.imagePickerCropLayout.onRatioChange("1:1")
                     binding.apply {
-                        imagePickerRootLayout.updateTransition {
-                            setDimensionRatio(R.id.image_picker_ratio, "1:1")
+                        imagePickerSquareRatio.isVisible = true
+                        imagePickerClassicRatio.isVisible = false
 
+                        imagePickerRootLayout.updateTransition {
                             val diff = (cropLayoutBottomGuideline.guidePercent - cropLayoutTopGuideline.guidePercent) / 6
                             Log.d("image-picker", "top: ${cropLayoutTopGuideline.guidePercent}, bottom: ${cropLayoutBottomGuideline.guidePercent}, diff: $diff")
                             setGuidelinePercent(R.id.crop_layout_top_guideline, cropLayoutTopGuideline.guidePercent - diff)
                             setGuidelinePercent(R.id.crop_layout_bottom_guideline, cropLayoutBottomGuideline.guidePercent + diff)
                         }
-
-                        imagePickerRatio.text = "1:1"
                     }
                 }
                 Ratio.RATIO_4_3 -> {
                     binding.apply {
-                        imagePickerRootLayout.updateTransition {
-                            setDimensionRatio(R.id.image_picker_ratio, "4:3")
+                        imagePickerSquareRatio.isVisible = false
+                        imagePickerClassicRatio.isVisible = true
 
+                        imagePickerRootLayout.updateTransition {
                             val diff = (cropLayoutBottomGuideline.guidePercent - cropLayoutTopGuideline.guidePercent) / 8
                             Log.d("image-picker", "top: ${cropLayoutTopGuideline.guidePercent}, bottom: ${cropLayoutBottomGuideline.guidePercent}, diff: $diff")
                             setGuidelinePercent(R.id.crop_layout_top_guideline, cropLayoutTopGuideline.guidePercent + diff)
                             setGuidelinePercent(R.id.crop_layout_bottom_guideline, cropLayoutBottomGuideline.guidePercent - diff)
                         }
-
-                        imagePickerRatio.text = "4:3"
                     }
                 }
                 else -> {}
@@ -229,10 +224,7 @@ class ImagePickerFragment: Fragment(R.layout.fragment_image_picker) {
         viewModel.focusedImage.observe(viewLifecycleOwner) { focusedImage ->
             imageAdapter.focusedImage = focusedImage
             focusedImage
-                    ?.let {
-                        binding.imagePickerCropLayout.getCropParam()
-                        binding.imagePickerCropLayout.setUri(it.uri)
-                    }
+                    ?.let { binding.imagePickerCropLayout.setImageURI(it.uri) }
                     /*?: place holder */
         }
     }
